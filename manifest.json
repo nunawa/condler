@@ -1,0 +1,39 @@
+{
+
+    "manifest_version": 2,
+    "name": "Condler - Enhanced search on Amazon",
+    "version": "0.1.0",
+  
+    "description": "Amazonで商品を探しやすくします。",
+  
+    "icons": {
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["*://*.amazon.co.jp/*"],
+        "js": ["lib/browser-polyfill.js", "lib/jquery-3.5.1.min.js", "content.js"],
+        "run_at": "document_end"
+      }
+    ],
+
+    "background": {
+      "scripts": ["lib/browser-polyfill.js", "lib/jquery-3.5.1.min.js", "background.js"]
+    },
+
+     "web_accessible_resources": [
+      "search-options-dom.html"
+    ],   
+
+    "options_ui": {
+      "page": "options/options.html",
+      "browser_style": true
+    },
+
+    "permissions": [
+      "storage"
+    ]
+    
+}
