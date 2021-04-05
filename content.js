@@ -3,41 +3,180 @@ const error = "[condler] error: ";
 
 
 
-// ドロップダウン並べ替え非表示
-$("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
-
-// アドオン用DOM要素作成
-let div = document.createElement("div");
-div.id = "condler";
-div.className = "a-section a-spacing-none";
-
-// 検索結果ページかどうか
-if (document.getElementById("s-refinements")) {
-    console.log(info + "s-refinements exists");
-    $("div#s-refinements>div>div:first").before(div);
-    $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
-} else {
-    console.log(info + "s-refinements does not exists");
+// sessionStorageからget -> 値が不一致だったらURLのを設定
+function sessionStorageCompare(key, value, length) {
+    if (value != sessionStorage.getItem(key)) {
+        console.log(info + "change item: " + key + ", " + value);
+        if (key.includes("button")) {
+            for (let i = 0; i < length; i++) {
+                sessionStorage.setItem("button" + i, "false");
+            }
+        }
+        sessionStorage.setItem(key, value);
+    }
 }
 
 
 
-// firefoxかchromeか判別してから実行
-// 読み込みタイミングに違いがあるため
-function loadCallback() {
-    if (chrome.app) {
-        console.log(info + "current browser: chrome");
+// URLパースして値をsessionStorageCompareに渡す
+function urlParse(url, radioButton) {
+    const params = new URLSearchParams(url);
 
-        $(window).on("load", function() {
-            main();
+    if (params.has("s")) {
+        const s = params.get("s");
+
+        radioButton.each(function(index) {
+            const elementValue = $(this).val().replace("&sort=", "");
+            if (s == elementValue) {
+                sessionStorageCompare("button" + index, "true", radioButton.length);
+            }
         });
     } else {
-        console.log(info + "current browser: firefox");
-
-        $(function() {
-            main();
-        });
+        for (let i = 0; i < radioButton.length; i++) {
+            sessionStorage.removeItem("button" + i);
+        }
     }
+
+    if (url.match(/p_6%3AAN1VRQENFRJN5/)) {
+        sessionStorageCompare("checkbox", "true");
+        // sessionStorage.setでもよい？
+    } else {
+        sessionStorage.removeItem("checkbox");
+    }
+
+    let price = url.match(/p_36%3A\d+00-\d+00/g);
+    if (price != null) {
+        price = price[0].replace("p_36%3A", "").split("-");
+        sessionStorageCompare("price0", price[0].substring(0, price[0].length-2));
+        sessionStorageCompare("price1", price[1].substring(0, price[1].length-2));
+    } else {
+        price = url.match(/p_36%3A\d+00-/g);
+        if (price != null) {
+            price = price[0].replace("p_36%3A", "").replace("00-", "");
+            sessionStorageCompare("price0", price);
+            sessionStorageCompare("price1", "");
+        } else {
+            price = url.match(/p_36%3A-\d+00/g);
+            if (price != null) {
+                price = price[0].replace("p_36%3A-", "");
+                sessionStorageCompare("price0", "");
+                sessionStorageCompare("price1", price.substring(0, price.length-2));
+            } else {
+                sessionStorage.removeItem("price0");
+                sessionStorage.removeItem("price1");
+            }
+        }
+    }
+
+    let percent = url.match(/p_8%3A\d+-\d+/g);
+    if (percent != null) {
+        percent = percent[0].replace("p_8%3A", "").split("-");
+        sessionStorageCompare("percent0", percent[0]);
+        sessionStorageCompare("percent1", percent[1]);
+    } else {
+        percent = url.match(/p_8%3A\d+-/g);
+        if (percent != null) {
+            percent = percent[0].replace("p_8%3A", "").replace("-", "");
+            sessionStorageCompare("percent0", percent);
+            sessionStorageCompare("percent1", "");
+        } else {
+            percent = url.match(/p_8%3A-\d+/g);
+            if (percent != null) {
+                percent = percent[0].replace("p_8%3A", "").replace("-", "");
+                sessionStorageCompare("percent0", "");
+                sessionStorageCompare("percent1", percent);
+            } else {
+                sessionStorage.removeItem("percent0");
+                sessionStorage.removeItem("percent1");
+            }
+        }
+    }
+}
+
+
+
+// 入力値分析、ページ遷移
+// urlの部分 &high-price= と &pct-off= 分ける
+function numberParse(type, low, high, replacedUrl) {
+    const pattern = /\D/g;
+    let param;
+    let highParam;
+    let lowParam;
+    let key0;
+    let key1;
+    
+    if (type == 0) {
+        param = `&low-price=${low}&high-price=${high}`;
+        highParam = `&high-price=${high}`;
+        lowParam = `&low-price=${low}`;
+        key0 = "price0";
+        key1 = "price1";
+    } else if (type == 1) {
+        // 0入力しても削除されない
+        if (low == 0) {
+            low = "";
+        }
+        if (high == 0) {
+            high = "";
+        }
+
+        param = `&pct-off=${low}-${high}`;
+        highParam = `&pct-off=-${high}`;
+        lowParam = `&pct-off=${low}-`;
+        key0 = "percent0";
+        key1 = "percent1";
+    }
+
+    if (pattern.test(low)) {
+        console.log(error + "low is NaN");
+    } else if (pattern.test(high)) {
+        console.log(error + "high is NaN");
+    } else if (parseInt(low) > parseInt(high)) {
+        console.log(error + "low > high");
+    } else if (low == "" && high == "") {
+        sessionStorage.setItem(key0, low);
+        sessionStorage.setItem(key1, high);
+        window.location.href = replacedUrl;
+    } else if (low == "") {
+        sessionStorage.setItem(key0, low);
+        sessionStorage.setItem(key1, high);
+        window.location.href = replacedUrl + highParam;
+    } else if (high == "") {
+        sessionStorage.setItem(key0, low);
+        sessionStorage.setItem(key1, high);
+        window.location.href = replacedUrl + lowParam;
+    } else {
+        sessionStorage.setItem(key0, low);
+        sessionStorage.setItem(key1, high);
+        window.location.href = location.href + param;
+    }
+}
+
+
+
+// アドオンが使ってるsessionStorageを消去
+function sessionStorageClear(length) {
+    console.log(info + "sessionStorageClear() is worked");
+
+    for (let i = 0; i < length; i++) {
+        sessionStorage.removeItem("button" + i);
+    }
+    sessionStorage.removeItem("checkbox");
+    sessionStorage.removeItem("price0");
+    sessionStorage.removeItem("price1");
+    sessionStorage.removeItem("percent0");
+    sessionStorage.removeItem("percent1");
+}
+
+
+
+// 300ms後にページ遷移
+function pageTransition(linkUrl) {
+    console.log(info + "pageTransition() is worked");
+    
+    setTimeout(function() {
+        location.href = linkUrl;
+    }, 300);
 }
 
 
@@ -206,10 +345,8 @@ function main() {
 
         console.log(info + "s-refinements clicked");
 
-        // チェックボックス
         let linkUrl = $(this).closest("a").attr("href");
         if (linkUrl === undefined) {
-            // その他普通のテキストなど
             linkUrl = $(this).children("a").attr("href");
         }
 
@@ -231,178 +368,39 @@ function main() {
 
 
 
-// URLパースして値をsessionStorageCompareに渡す
-function urlParse(url, radioButton) {
-    const params = new URLSearchParams(url);
+// firefoxかchromeか判別してから実行
+// 読み込みタイミングに違いがあるため
+function loadCallback() {
+    if (chrome.app) {
+        console.log(info + "current browser: chrome");
 
-    if (params.has("s")) {
-        const s = params.get("s");
-
-        radioButton.each(function(index) {
-            const elementValue = $(this).val().replace("&sort=", "");
-            if (s == elementValue) {
-                sessionStorageCompare("button" + index, "true", radioButton.length);
-            }
+        $(window).on("load", function() {
+            main();
         });
     } else {
-        for (let i = 0; i < radioButton.length; i++) {
-            sessionStorage.removeItem("button" + i);
-        }
-    }
+        console.log(info + "current browser: firefox");
 
-    if (url.match(/p_6%3AAN1VRQENFRJN5/)) {
-        sessionStorageCompare("checkbox", "true");
-        // sessionStorage.setでもよい？
-    } else {
-        sessionStorage.removeItem("checkbox");
-    }
-
-    let price = url.match(/p_36%3A\d+00-\d+00/g);
-    if (price != null) {
-        price = price[0].replace("p_36%3A", "").split("-");
-        sessionStorageCompare("price0", price[0].substring(0, price[0].length-2));
-        sessionStorageCompare("price1", price[1].substring(0, price[1].length-2));
-    } else {
-        price = url.match(/p_36%3A\d+00-/g);
-        if (price != null) {
-            price = price[0].replace("p_36%3A", "").replace("00-", "");
-            sessionStorageCompare("price0", price);
-            sessionStorageCompare("price1", "");
-        } else {
-            price = url.match(/p_36%3A-\d+00/g);
-            if (price != null) {
-                price = price[0].replace("p_36%3A-", "");
-                sessionStorageCompare("price0", "");
-                sessionStorageCompare("price1", price.substring(0, price.length-2));
-            } else {
-                sessionStorage.removeItem("price0");
-                sessionStorage.removeItem("price1");
-            }
-        }
-    }
-
-    let percent = url.match(/p_8%3A\d+-\d+/g);
-    if (percent != null) {
-        percent = percent[0].replace("p_8%3A", "").split("-");
-        sessionStorageCompare("percent0", percent[0]);
-        sessionStorageCompare("percent1", percent[1]);
-    } else {
-        percent = url.match(/p_8%3A\d+-/g);
-        if (percent != null) {
-            percent = percent[0].replace("p_8%3A", "").replace("-", "");
-            sessionStorageCompare("percent0", percent);
-            sessionStorageCompare("percent1", "");
-        } else {
-            percent = url.match(/p_8%3A-\d+/g);
-            if (percent != null) {
-                percent = percent[0].replace("p_8%3A", "").replace("-", "");
-                sessionStorageCompare("percent0", "");
-                sessionStorageCompare("percent1", percent);
-            } else {
-                sessionStorage.removeItem("percent0");
-                sessionStorage.removeItem("percent1");
-            }
-        }
+        $(function() {
+            main();
+        });
     }
 }
 
 
 
-// sessionStorageからget -> 値が不一致だったらURLのを設定
-function sessionStorageCompare(key, value, length) {
-    if (value != sessionStorage.getItem(key)) {
-        console.log(info + "change item: " + key + ", " + value);
-        if (key.includes("button")) {
-            for (let i = 0; i < length; i++) {
-                sessionStorage.setItem("button" + i, "false");
-            }
-        }
-        sessionStorage.setItem(key, value);
-    }
-}
+// ドロップダウン並べ替え非表示
+$("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
 
+// アドオン用DOM要素作成
+let div = document.createElement("div");
+div.id = "condler";
+div.className = "a-section a-spacing-none";
 
-
-// 入力値分析、ページ遷移
-// urlの部分 &high-price= と &pct-off= 分ける
-function numberParse(type, low, high, replacedUrl) {
-    const pattern = /\D/g;
-    let param;
-    let highParam;
-    let lowParam;
-    let key0;
-    let key1;
-    
-    if (type == 0) {
-        param = `&low-price=${low}&high-price=${high}`;
-        highParam = `&high-price=${high}`;
-        lowParam = `&low-price=${low}`;
-        key0 = "price0";
-        key1 = "price1";
-    } else if (type == 1) {
-        // 0入力しても削除されない
-        if (low == 0) {
-            low = "";
-        }
-        if (high == 0) {
-            high = "";
-        }
-
-        param = `&pct-off=${low}-${high}`;
-        highParam = `&pct-off=-${high}`;
-        lowParam = `&pct-off=${low}-`;
-        key0 = "percent0";
-        key1 = "percent1";
-    }
-
-    if (pattern.test(low)) {
-        console.log(error + "low is NaN");
-    } else if (pattern.test(high)) {
-        console.log(error + "high is NaN");
-    } else if (parseInt(low) > parseInt(high)) {
-        console.log(error + "low > high");
-    } else if (low == "" && high == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
-        window.location.href = replacedUrl;
-    } else if (low == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
-        window.location.href = replacedUrl + highParam;
-    } else if (high == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
-        window.location.href = replacedUrl + lowParam;
-    } else {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
-        window.location.href = location.href + param;
-    }
-}
-
-
-
-// アドオンが使ってるsessionStorageを消去
-function sessionStorageClear(length) {
-    console.log(info + "sessionStorageClear() is worked");
-
-    for (let i = 0; i < length; i++) {
-        sessionStorage.removeItem("button" + i);
-    }
-    sessionStorage.removeItem("checkbox");
-    sessionStorage.removeItem("price0");
-    sessionStorage.removeItem("price1");
-    sessionStorage.removeItem("percent0");
-    sessionStorage.removeItem("percent1");
-}
-
-
-
-// 300ms後にページ遷移
-function pageTransition(linkUrl) {
-    console.log(info + "pageTransition() is worked");
-    
-    setTimeout(function() {
-        location.href = linkUrl;
-    }, 300);
+// 検索結果ページかどうか
+if (document.getElementById("s-refinements")) {
+    console.log(info + "s-refinements exists");
+    $("div#s-refinements>div>div:first").before(div);
+    $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
+} else {
+    console.log(info + "s-refinements does not exists");
 }
