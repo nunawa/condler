@@ -8,14 +8,14 @@ $.get(browser.runtime.getURL("search-options-dom.html"), function(data) {
         }
         i++;
     }
-    console.log("numel: " + i);
+    //console.log("numel: " + i);
     browser.storage.local.set({numel: i});
 });
 
 // 表示非表示設定
 browser.storage.local.get("ele0").then(function(result) {
     if (!Object.keys(result).length) {
-        console.log("result is empty");
+        //console.log("result is empty");
 
         let data = {};
         browser.storage.local.get("numel").then(function(result) {

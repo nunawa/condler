@@ -6,7 +6,7 @@ const error = "[condler] error: ";
 // sessionStorageからget -> 値が不一致だったらURLのを設定
 function sessionStorageCompare(key, value, length) {
     if (value != sessionStorage.getItem(key)) {
-        console.log(info + "change item: " + key + ", " + value);
+        //console.log(info + "change item: " + key + ", " + value);
         if (key.includes("button")) {
             for (let i = 0; i < length; i++) {
                 sessionStorage.setItem("button" + i, "false");
@@ -128,11 +128,11 @@ function numberParse(type, low, high, replacedUrl) {
     }
 
     if (pattern.test(low)) {
-        console.log(error + "low is NaN");
+        //console.log(error + "low is NaN");
     } else if (pattern.test(high)) {
-        console.log(error + "high is NaN");
+        //console.log(error + "high is NaN");
     } else if (parseInt(low) > parseInt(high)) {
-        console.log(error + "low > high");
+        //console.log(error + "low > high");
     } else if (low == "" && high == "") {
         sessionStorage.setItem(key0, low);
         sessionStorage.setItem(key1, high);
@@ -156,8 +156,6 @@ function numberParse(type, low, high, replacedUrl) {
 
 // アドオンが使ってるsessionStorageを消去
 function sessionStorageClear(length) {
-    console.log(info + "sessionStorageClear() is worked");
-
     for (let i = 0; i < length; i++) {
         sessionStorage.removeItem("button" + i);
     }
@@ -172,8 +170,6 @@ function sessionStorageClear(length) {
 
 // 300ms後にページ遷移
 function pageTransition(linkUrl) {
-    console.log(info + "pageTransition() is worked");
-    
     setTimeout(function() {
         location.href = linkUrl;
     }, 300);
@@ -189,7 +185,7 @@ function main() {
 
             browser.storage.local.get([key]).then(function(result) {
                 if (result[key] == false) {
-                    console.log(info + key + " is false");
+                    //console.log(info + key + " is false");
                     // + 変数名 でセレクタに変数使える
                     $("div#condler #" + key + "*").hide();
                 }
@@ -201,10 +197,8 @@ function main() {
 
     // url解析
     const radioButton = $("div#condler input[type='radio'][name='radioButton']");
-    if (radioButton.length) {
-        console.log(info + "get radioButton: success");
-    } else {
-        console.log(error + "get radioButton: failure");
+    if (!radioButton.length) {
+        //console.log(error + "get radioButton: failure");
     }
     urlParse(location.href, radioButton);
 
@@ -238,11 +232,11 @@ function main() {
     checkbox.on("click", function() {
         if (checkboxPrevState) {
             sessionStorage.setItem("checkbox", "false");
-            console.log(info + "checkbox: true->false");
+            //console.log(info + "checkbox: true->false");
 
             // 出品者欄にAmazon.co.jpが存在するかどうか
             if (document.getElementById("p_6/AN1VRQENFRJN5")) {   
-                console.log(info + "amazonCheckbox is exist");
+                //console.log(info + "amazonCheckbox is exist");
                 
                 // Amazon.co.jpチェック解除のリンクへ
                 window.location.href = $("div#s-refinements li#p_6\\/AN1VRQENFRJN5 a").attr("href");
@@ -252,7 +246,7 @@ function main() {
             }
         } else {
             sessionStorage.setItem("checkbox", "true");
-            console.log(info + "checkbox: false->true");
+            //console.log(info + "checkbox: false->true");
 
             window.location.href = location.href + $(this).val();
         }
@@ -285,10 +279,10 @@ function main() {
     // 値段絞り込みのGoボタンクリック時のイベントハンドラ
     $("div#condler li#priceInput input.a-button-input").on("click", function() {
         const lowPriceVal = lowPrice.val();
-        console.log(info + "lowPrice: " + lowPriceVal);
+        //console.log(info + "lowPrice: " + lowPriceVal);
         
         const highPriceVal = highPrice.val();
-        console.log(info + "highPrice: " + highPriceVal);
+        //console.log(info + "highPrice: " + highPriceVal);
 
         // abcが混ざってる -> 何もしない
         // 空 -> 削除
@@ -303,10 +297,10 @@ function main() {
     // 値引き率絞り込みのGoボタンクリック時のイベントハンドラ
     $("div#condler li#percentOffInput input.a-button-input").on("click", function() {
         const lowPercentVal = lowPercent.val();
-        console.log(info + "lowPercent: " + lowPercentVal);
+        //console.log(info + "lowPercent: " + lowPercentVal);
         
         const highPercentVal = highPercent.val();
-        console.log(info + "highPercent: " + highPercentVal);
+        //console.log(info + "highPercent: " + highPercentVal);
 
         // p_8%3A[PERCENT]-[PERCENT]
 
@@ -320,7 +314,7 @@ function main() {
     $("div#departments li#n>span.a-list-item").on("click", function(e) {
         e.preventDefault();
 
-        console.log(info + "all category clicked");
+        //console.log(info + "all category clicked");
 
         sessionStorageClear(radioButton.length);
 
@@ -343,7 +337,7 @@ function main() {
         // たぶんチェックボックスだけイベントリスナーが設置してある
         e.stopImmediatePropagation();
 
-        console.log(info + "s-refinements clicked");
+        //console.log(info + "s-refinements clicked");
 
         let linkUrl = $(this).closest("a").attr("href");
         if (linkUrl === undefined) {
@@ -356,7 +350,7 @@ function main() {
     // aタグと検索ボタンクリック時のイベントハンドラ
     // 別タブで開くやつと左側の条件欄は除外
     $("a[target != '_blank'], input#nav-search-submit-button").not("div#s-refinements span.a-list-item *").on("click", function() {
-        console.log(info + "other a tags or search button clicked");
+        //console.log(info + "other a tags or search button clicked");
         
         sessionStorageClear(radioButton.length);
 
@@ -372,13 +366,13 @@ function main() {
 // 読み込みタイミングに違いがあるため
 function loadCallback() {
     if (chrome.app) {
-        console.log(info + "current browser: chrome");
+        //console.log(info + "current browser: chrome");
 
         $(window).on("load", function() {
             main();
         });
     } else {
-        console.log(info + "current browser: firefox");
+        //console.log(info + "current browser: firefox");
 
         $(function() {
             main();
@@ -398,9 +392,6 @@ div.className = "a-section a-spacing-none";
 
 // 検索結果ページかどうか
 if (document.getElementById("s-refinements")) {
-    console.log(info + "s-refinements exists");
     $("div#s-refinements>div>div:first").before(div);
     $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
-} else {
-    console.log(info + "s-refinements does not exists");
 }

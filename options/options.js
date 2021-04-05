@@ -6,7 +6,7 @@ let checkbox = document.getElementsByName("checkbox");
 //console.log("checkbox.length: " + checkbox.length);
 
 window.onload = function() {
-    console.log("checkbox.length: " + checkbox.length);
+    //console.log("checkbox.length: " + checkbox.length);
     browser.storage.local.get("numel").then(function(result) {
         if (checkbox.length != result.numel) {
             console.log("error: mismatch between checkbox.length and numel");
@@ -24,7 +24,6 @@ window.onload = function() {
         });
 
         checkbox[i].addEventListener("click", function() {
-            console.log("checkbox[" + i +  "], " + this.checked);
             // []で囲うことで変数を展開できる
             browser.storage.local.set({[key]: this.checked});
         });
