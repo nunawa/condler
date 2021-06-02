@@ -3,20 +3,7 @@ const error = "[condler] error: ";
 
 
 
-// sessionStorageからget -> 値が不一致だったらURLのを設定
-function sessionStorageCompare(key, value, length) {
-    if (value != sessionStorage.getItem(key)) {
-        //console.log(info + "change item: " + key + ", " + value);
-        if (key.includes("button")) {
-            for (let i = 0; i < length; i++) {
-                sessionStorage.setItem("button" + i, "false");
-            }
-        }
-        sessionStorage.setItem(key, value);
-    }
-}
-
-
+let element = {};
 
 // URLパースして値をsessionStorageCompareに渡す
 function urlParse(url, radioButton) {
@@ -28,42 +15,43 @@ function urlParse(url, radioButton) {
         radioButton.each(function(index) {
             const elementValue = $(this).val().replace("&sort=", "");
             if (s == elementValue) {
-                sessionStorageCompare("button" + index, "true", radioButton.length);
+                element["button" + index] = true;
+            } else {
+                element["button" + index] = false;
             }
         });
     } else {
         for (let i = 0; i < radioButton.length; i++) {
-            sessionStorage.removeItem("button" + i);
+            element["button" + i] = false;
         }
     }
 
     if (url.match(/p_6%3AAN1VRQENFRJN5/)) {
-        sessionStorageCompare("checkbox", "true");
-        // sessionStorage.setでもよい？
+        element.checkbox = true;
     } else {
-        sessionStorage.removeItem("checkbox");
+        element.checkbox = false;
     }
 
     let price = url.match(/p_36%3A\d+00-\d+00/g);
     if (price != null) {
         price = price[0].replace("p_36%3A", "").split("-");
-        sessionStorageCompare("price0", price[0].substring(0, price[0].length-2));
-        sessionStorageCompare("price1", price[1].substring(0, price[1].length-2));
+        element.price0 = price[0].substring(0, price[0].length-2);
+        element.price1 = price[1].substring(0, price[1].length-2);
     } else {
         price = url.match(/p_36%3A\d+00-/g);
         if (price != null) {
             price = price[0].replace("p_36%3A", "").replace("00-", "");
-            sessionStorageCompare("price0", price);
-            sessionStorageCompare("price1", "");
+            element.price0 = price;
+            element.price1 = "";
         } else {
             price = url.match(/p_36%3A-\d+00/g);
             if (price != null) {
                 price = price[0].replace("p_36%3A-", "");
-                sessionStorageCompare("price0", "");
-                sessionStorageCompare("price1", price.substring(0, price.length-2));
+                element.price0 = "";
+                element.price1 = price.substring(0, price.length-2);
             } else {
-                sessionStorage.removeItem("price0");
-                sessionStorage.removeItem("price1");
+                element.price0 = "";
+                element.price1 = "";
             }
         }
     }
@@ -71,23 +59,23 @@ function urlParse(url, radioButton) {
     let percent = url.match(/p_8%3A\d+-\d+/g);
     if (percent != null) {
         percent = percent[0].replace("p_8%3A", "").split("-");
-        sessionStorageCompare("percent0", percent[0]);
-        sessionStorageCompare("percent1", percent[1]);
+        element.percent0 = percent[0];
+        element.percent1 = percent[1];
     } else {
         percent = url.match(/p_8%3A\d+-/g);
         if (percent != null) {
             percent = percent[0].replace("p_8%3A", "").replace("-", "");
-            sessionStorageCompare("percent0", percent);
-            sessionStorageCompare("percent1", "");
+            element.percent0 = percent;
+            element.percent1 = "";
         } else {
             percent = url.match(/p_8%3A-\d+/g);
             if (percent != null) {
                 percent = percent[0].replace("p_8%3A", "").replace("-", "");
-                sessionStorageCompare("percent0", "");
-                sessionStorageCompare("percent1", percent);
+                element.percent0 = "";
+                element.percent1 = percent;
             } else {
-                sessionStorage.removeItem("percent0");
-                sessionStorage.removeItem("percent1");
+                element.percent0 = "";
+                element.percent1 = "";
             }
         }
     }
@@ -102,15 +90,11 @@ function numberParse(type, low, high, replacedUrl) {
     let param;
     let highParam;
     let lowParam;
-    let key0;
-    let key1;
     
     if (type == 0) {
         param = `&low-price=${low}&high-price=${high}`;
         highParam = `&high-price=${high}`;
         lowParam = `&low-price=${low}`;
-        key0 = "price0";
-        key1 = "price1";
     } else if (type == 1) {
         // 0入力しても削除されない
         if (low == 0) {
@@ -123,8 +107,6 @@ function numberParse(type, low, high, replacedUrl) {
         param = `&pct-off=${low}-${high}`;
         highParam = `&pct-off=-${high}`;
         lowParam = `&pct-off=${low}-`;
-        key0 = "percent0";
-        key1 = "percent1";
     }
 
     if (pattern.test(low)) {
@@ -134,36 +116,14 @@ function numberParse(type, low, high, replacedUrl) {
     } else if (parseInt(low) > parseInt(high)) {
         //console.log(error + "low > high");
     } else if (low == "" && high == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
         window.location.href = replacedUrl;
     } else if (low == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
         window.location.href = replacedUrl + highParam;
     } else if (high == "") {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
         window.location.href = replacedUrl + lowParam;
     } else {
-        sessionStorage.setItem(key0, low);
-        sessionStorage.setItem(key1, high);
         window.location.href = location.href + param;
     }
-}
-
-
-
-// アドオンが使ってるsessionStorageを消去
-function sessionStorageClear(length) {
-    for (let i = 0; i < length; i++) {
-        sessionStorage.removeItem("button" + i);
-    }
-    sessionStorage.removeItem("checkbox");
-    sessionStorage.removeItem("price0");
-    sessionStorage.removeItem("price1");
-    sessionStorage.removeItem("percent0");
-    sessionStorage.removeItem("percent1");
 }
 
 
@@ -206,15 +166,11 @@ function main() {
 
     // 並べ替えの値復元、クリック時のイベントハンドラ
     radioButton.each(function(index) {
-        if (sessionStorage.getItem("button" + index) == "true") {
+        if (element["button" + index] == true) {
             $(this).prop("checked", true);
         }
 
         $(this).on("click", function() {
-            for (let i = 0; i < radioButton.length; i++) {
-                sessionStorage.setItem("button" + i, "false");
-            }
-            sessionStorage.setItem("button" + index, "true");
             window.location.href = location.href + $(this).val();
         });
     });
@@ -223,7 +179,7 @@ function main() {
 
     // Amazon公式出品の値復元
     const checkbox = $("div#condler input[type='checkbox'][name='checkbox']");
-    if (sessionStorage.getItem("checkbox") == "true") {
+    if (element.checkbox == true) {
         checkbox.prop("checked", true);
     }
 
@@ -231,7 +187,6 @@ function main() {
     const checkboxPrevState = checkbox.prop("checked");
     checkbox.on("click", function() {
         if (checkboxPrevState) {
-            sessionStorage.setItem("checkbox", "false");
             //console.log(info + "checkbox: true->false");
 
             // 出品者欄にAmazon.co.jpが存在するかどうか
@@ -245,7 +200,6 @@ function main() {
                 window.location.href = location.href.replace($(this).val(), "").replace("p_6%3AAN1VRQENFRJN5", "");
             }
         } else {
-            sessionStorage.setItem("checkbox", "true");
             //console.log(info + "checkbox: false->true");
 
             window.location.href = location.href + $(this).val();
@@ -254,24 +208,24 @@ function main() {
 
 
 
-    // 値段絞り込み値sessionStorageから復元
+    // 値段絞り込み値を復元
     const lowPrice = $("div#condler li#priceInput>input#low-price");
     const highPrice = $("div#condler li#priceInput>input#high-price");
-    if (sessionStorage.getItem("price0") != null) {
-        lowPrice.val(sessionStorage.getItem("price0"));
+    if (element.price0) {
+        lowPrice.val(element.price0);
     }
-    if (sessionStorage.getItem("price1") != null) {
-        highPrice.val(sessionStorage.getItem("price1"));
+    if (element.price1) {
+        highPrice.val(element.price1);
     }
 
-    // 値引き率絞り込み値sessionStorageから復元
+    // 値引き率絞り込み値を復元
     const lowPercent = $("div#condler li#percentOffInput>input#low-percent");
     const highPercent = $("div#condler li#percentOffInput>input#high-percent");
-    if (sessionStorage.getItem("percent0") != null) {
-        lowPercent.val(sessionStorage.getItem("percent0"));
+    if (element.percent0) {
+        lowPercent.val(element.percent0);
     }
-    if (sessionStorage.getItem("percent1") != null) {
-        highPercent.val(sessionStorage.getItem("percent1"));
+    if (element.percent1) {
+        highPercent.val(element.percent1);
     }
 
 
@@ -316,8 +270,6 @@ function main() {
 
         //console.log(info + "all category clicked");
 
-        sessionStorageClear(radioButton.length);
-
         // チェックボックス
         let linkUrl = $(this).closest("a").attr("href");
         if (linkUrl === undefined) {
@@ -345,18 +297,6 @@ function main() {
         }
 
         pageTransition(linkUrl);
-    });
-
-    // aタグと検索ボタンクリック時のイベントハンドラ
-    // 別タブで開くやつと左側の条件欄は除外
-    $("a[target != '_blank'], input#nav-search-submit-button").not("div#s-refinements span.a-list-item *").on("click", function() {
-        //console.log(info + "other a tags or search button clicked");
-        
-        sessionStorageClear(radioButton.length);
-
-        // 左絞り込み押して遷移 -> ソートは保持
-        // 上の検索ボタン押して遷移 -> 保持しない
-        // 別のページ行って検索 -> 保持しない
     });
 }
 
