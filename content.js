@@ -165,15 +165,21 @@ function main() {
 
 
     // 並べ替えの値復元、クリック時のイベントハンドラ
+    let allButtonFalseFlag = true;
     radioButton.each(function(index) {
         if (element["button" + index] == true) {
             $(this).prop("checked", true);
+            allButtonFalseFlag = false;
         }
 
         $(this).on("click", function() {
             window.location.href = location.href + $(this).val();
         });
     });
+
+    if (allButtonFalseFlag == true) {
+        $("div#condler li#ele0 input[type='radio'][name='radioButton']").prop("checked", true);
+    }
 
 
 
