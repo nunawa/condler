@@ -14,8 +14,16 @@
     "content_scripts": [
       {
         "matches": ["*://*.amazon.co.jp/*"],
-        "js": ["lib/browser-polyfill.js", "lib/jquery-3.5.1.min.js", "content.js"],
-        "run_at": "document_end"
+        "js": ["lib/browser-polyfill.js", "lib/jquery-3.5.1.min.js"],
+        "run_at": "document_start",
+        "all_frames": true
+      },
+
+      {
+        "matches": ["*://*.amazon.co.jp/*"],
+        "js": ["content.js"],
+        "run_at": "document_end",
+        "all_frames": true
       }
     ],
 

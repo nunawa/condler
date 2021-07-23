@@ -137,7 +137,7 @@ function pageTransition(linkUrl) {
 
 
 
-function main() {
+function main(radioButton) {
     // アドオン非表示設定の適用
     browser.storage.local.get("numel").then(function(result) {
         for (let i = 0; i < result.numel; i++) {
@@ -156,7 +156,6 @@ function main() {
 
 
     // url解析
-    const radioButton = $("div#condler input[type='radio'][name='radioButton']");
     if (!radioButton.length) {
         //console.log(error + "get radioButton: failure");
     }
@@ -308,36 +307,40 @@ function main() {
 
 
 
-// firefoxかchromeか判別してから実行
+// 100ms間隔で5回、radioButtonの取得を試みる
 // 読み込みタイミングに違いがあるため
 function loadCallback() {
-    if (chrome.app) {
-        //console.log(info + "current browser: chrome");
+    const timer = setInterval(() => {
+        const radioButton = $("div#condler input[type='radio'][name='radioButton']");
+        if (radioButton.length) {
+            //console.log(info + "get radioButton succeed");
+            clearInterval(timer);
 
-        $(window).on("load", function() {
-            main();
-        });
-    } else {
-        //console.log(info + "current browser: firefox");
-
-        $(function() {
-            main();
-        });
-    }
+            main(radioButton);
+        }
+    }, 100, 5);
 }
 
 
 
-// ドロップダウン並べ替え非表示
-$("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
+$(window).on("load", function() {
+    // ドロップダウン並べ替え非表示
+    $("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
 
-// アドオン用DOM要素作成
-let div = document.createElement("div");
-div.id = "condler";
-div.className = "a-section a-spacing-none";
+    // アドオン用DOM要素作成
+    let div = document.createElement("div");
+    div.id = "condler";
+    div.className = "a-section a-spacing-none";
 
-// 検索結果ページかどうか
-if (document.getElementById("s-refinements")) {
-    $("div#s-refinements>div>div:first").before(div);
-    $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
-}
+    // 100ms間隔で5回、targetNodeの取得を試みる
+    const timer = setInterval(() => {
+        const targetNode = $("div#s-refinements>div>div:first");
+        if (targetNode.length) {
+            //console.log(info + "get div#s-refinements succeed");
+            clearInterval(timer);
+
+            targetNode.before(div);
+            $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
+        }
+    }, 100, 5);
+});
