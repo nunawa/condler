@@ -1,120 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja" style="font-size: 17px;">
     <head>
         <meta charset="utf-8">
         <title>Options Page | Condler</title>
-        <link rel="stylesheet" type="text/css" href="options.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="application/javascript" src="../lib/browser-polyfill.js"></script>
+        <link type="text/css" rel="stylesheet" href="../lib/bootstrap.min.css">
+        <script type="application/javascript" src="../lib/bootstrap.min.js"></script>
         <script type="application/javascript" src="options.js"></script>
     </head>
     
-    <body>
-        <h2>表示/非表示切り替え</h2>
-
-        <div class="type">
-            <h3>並べ替え</h3>
-
-            <div class="switches">
-
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort0">
-                        <span class="slider round"></span>
-                    </label>
-                    アマゾンおすすめ商品順
-                </div>
-
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort1">
-                        <span class="slider round"></span>
-                    </label>
-                    人気の高い順
-                </div>
-
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort2">
-                        <span class="slider round"></span>
-                    </label>
-                    売上の良い順
-                </div>
-                
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort3">
-                        <span class="slider round"></span>
-                    </label>
-                    レビューが良い順
-                </div>
+    <body class="px-3 py-5">
+        <div class="container">
+          <h3>表示・非表示切り替え</h3>
+          <p class="text-secondary">検索結果ページでの絞り込み項目の表示・非表示を切り替えることができます。</p>
+          <div class="container shadow bg-light p-4 rounded">
+            <h5>並べ替え</h5>
+            <div class="ms-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortRelevanceblender" name="checkbox" value="sort0" checked>
+                <label class="form-check-label" for="sortRelevanceblender">アマゾンおすすめ商品順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortPopularity" name="checkbox" value="sort1" checked>
+                <label class="form-check-label" for="sortPopularity">人気の高い順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortSales" name="checkbox" value="sort2" checked>
+                <label class="form-check-label" for="sortSales">売上の良い順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortReview" name="checkbox" value="sort3" checked>
+                <label class="form-check-label" for="sortReview">レビューが良い順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortPrice" name="checkbox" value="sort4" checked>
+                <label class="form-check-label" for="sortPrice">価格の安い順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortreversedPrice" name="checkbox" value="sort5" checked>
+                <label class="form-check-label" for="sortreversedPrice">価格の高い順</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sortReleasedate" name="checkbox" value="sort6" checked>
+                <label class="form-check-label" for="sortReleasedate">発売日の新しい順</label>
+              </div>
+            </div>
+            <hr class="my-3">
     
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort4">
-                        <span class="slider round"></span>
-                    </label>
-                    価格の安い順
-                </div>
+            <h5>出品</h5>
+            <div class="ms-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="filterAmazonOnly" name="checkbox" value="seller" checked>
+                <label class="form-check-label" for="filterAmazonOnly">Amazon公式出品のみ</label>
+              </div>
+            </div>
+            <hr class="my-3">
     
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort5">
-                        <span class="slider round"></span>
-                    </label>
-                    価格の高い順
-                </div>
+            <h5>価格</h5>
+            <div class="ms-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="filterPrice" name="checkbox" value="price" checked>
+                <label class="form-check-label" for="filterPrice">表示する</label>
+              </div>
+            </div>
+            <hr class="my-3">
     
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="sort6">
-                        <span class="slider round"></span>
-                    </label>
-                    発売日の新しい順
-                </div>
-
+            <h5>割引率</h5>
+            <div class="ms-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="filterPercentOff" name="checkbox" value="percentOff" checked>
+                <label class="form-check-label" for="filterPercentOff">表示する</label>
+              </div>          
             </div>
+          </div>
         </div>
-
-        <div class="type">
-            <h3>出品</h3>
-
-            <div class="switches">
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="seller">
-                        <span class="slider round"></span>
-                    </label>
-                    Amazon公式出品のみ
-                </div>
-            </div>
-        </div>
-
-        <div class="type">
-            <h3>価格</h3>
-
-            <div class="switches">
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="price">
-                        <span class="slider round"></span>
-                    </label>
-                    表示する
-                </div>
-            </div>
-        </div>
-
-        <div class="type">
-            <h3>割引率</h3>
-
-            <div class="switches">
-                <div class="element">
-                    <label class="switch">
-                        <input type="checkbox" name="checkbox" value="percentOff">
-                        <span class="slider round"></span>
-                    </label>
-                    表示する
-                </div>
-            </div>
-        </div>
-    </body>
+      </body>
 </html>
