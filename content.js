@@ -4,6 +4,7 @@ const error = "[condler] error: ";
 
 
 let element = {};
+let newLayoutFlag = false;
 
 // URLパースして値をsessionStorageCompareに渡す
 function urlParse(url, radioButton) {
@@ -199,7 +200,11 @@ function main(radioButton) {
                 //console.log(info + "amazonCheckbox is exist");
                 
                 // Amazon.co.jpチェック解除のリンクへ
-                window.location.href = $("div#s-refinements li#p_6\\/AN1VRQENFRJN5 a").attr("href");
+                if (newLayoutFlag) {
+                    window.location.href = $("a#p_6\\/AN1VRQENFRJN5").attr("href");
+                } else {
+                    window.location.href = $("div#s-refinements li#p_6\\/AN1VRQENFRJN5 a").attr("href");
+                }
             } else {
                 // URLから関連要素削除したリンクへ
                 window.location.href = location.href.replace($(this).val(), "").replace("p_6%3AAN1VRQENFRJN5", "");
@@ -269,6 +274,25 @@ function main(radioButton) {
 
 
 
+    // div#dropdown-content-s-all-filters配下のaタグに対して遅延.load()
+    $("div#dropdown-content-s-all-filters span.a-declarative>a[href^='\\/s?']").on("click", function() {
+        setTimeout(() => {
+            const timer = setInterval(() => {
+                if (!document.getElementById("#condler")) {
+                    clearInterval(timer);
+
+                    let div = document.createElement("div");
+                    div.id = "condler";
+                    div.className = "a-section a-spacing-none";
+
+                    $("div#dropdown-content-s-all-filters>div:first").before(div);
+
+                    $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
+                }
+            }, 100);
+        }, 1000);
+    });
+
     // カテゴリー選択時「すべてのカテゴリー」を押したときのイベントハンドラ
     $("div#departments li#n>span.a-list-item").on("click", function(e) {
         e.preventDefault();
@@ -334,12 +358,18 @@ $(window).on("load", function() {
 
     // 100ms間隔で5回、targetNodeの取得を試みる
     const timer = setInterval(() => {
-        const targetNode = $("div#s-refinements>div>div:first");
-        if (targetNode.length) {
-            //console.log(info + "get div#s-refinements succeed");
+        const primaryTarget = $("div#s-refinements>div>div:first");
+        const secondaryTarget = $("div#dropdown-content-s-all-filters>div:first");
+        if (primaryTarget.length) {
             clearInterval(timer);
 
-            targetNode.before(div);
+            primaryTarget.before(div);
+            $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
+        } else if (secondaryTarget.length) {
+            clearInterval(timer);
+
+            newLayoutFlag = true;
+            secondaryTarget.before(div);
             $("div#condler").load(browser.runtime.getURL("search-options-dom.html"), loadCallback());
         }
     }, 100, 5);
