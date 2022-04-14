@@ -4,7 +4,7 @@
 
 <ul id="sort" aria-labelledby="sort" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
 
-    <li id="ele0" aria-label="アマゾンおすすめ商品順" class="a-spacing-micro">
+    <li id="sortRelevance" name="hideableElem" aria-label="アマゾンおすすめ商品順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=relevanceblender">
@@ -14,7 +14,7 @@
         <span class="a-size-base a-color-base" dir="auto">アマゾンおすすめ商品順</span>
     </li>
     
-    <li id="ele1" aria-label="人気の高い順" class="a-spacing-micro">
+    <li id="sortPopularity" name="hideableElem" aria-label="人気の高い順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=popularity-rank">
@@ -24,7 +24,7 @@
         <span class="a-size-base a-color-base" dir="auto">人気の高い順</span>
     </li>
     
-    <li id="ele2" aria-label="売上の良い順" class="a-spacing-micro">
+    <li id="sortSales" name="hideableElem" aria-label="売上の良い順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=salesrank">
@@ -34,7 +34,7 @@
         <span class="a-size-base a-color-base" dir="auto">売上の良い順</span>
     </li>
     
-    <li id="ele3" aria-label="レビューが良い順" class="a-spacing-micro">
+    <li id="sortReview" name="hideableElem" aria-label="レビューが良い順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=review-rank">
@@ -44,7 +44,7 @@
         <span class="a-size-base a-color-base" dir="auto">レビューが良い順</span>
     </li>
     
-    <li id="ele4" aria-label="価格の安い順" class="a-spacing-micro">
+    <li id="sortPrice" name="hideableElem" aria-label="価格の安い順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=price">
@@ -54,7 +54,7 @@
         <span class="a-size-base a-color-base" dir="auto">価格の安い順</span>
     </li>
     
-    <li id="ele5" aria-label="価格の高い順" class="a-spacing-micro">
+    <li id="sortInversePrice" name="hideableElem" aria-label="価格の高い順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=-price">
@@ -64,7 +64,7 @@
         <span class="a-size-base a-color-base" dir="auto">価格の高い順</span>
     </li>
     
-    <li id="ele6" aria-label="発売日の新しい順" class="a-spacing-micro">
+    <li id="sortReleaseDate" name="hideableElem" aria-label="発売日の新しい順" class="a-spacing-micro">
         <div class="a-radio a-radio-fancy s-navigation-radio aok-float-left">
             <label>
                 <input type="radio" name="radioButton" value="&sort=releasedate">
@@ -78,11 +78,11 @@
 
 
 
-<div id="ele7" class="a-section a-spacing-small">
+<div id="filterAmazonOnly" name="hideableElem" class="a-section a-spacing-small">
     <span class="a-size-base a-color-base a-text-bold" dir="auto">出品</span>
 </div>
 
-<ul id="ele7" aria-labelledby="seller" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
+<ul id="filterAmazonOnly" name="hideableElem" aria-labelledby="seller" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
 
     <li id="sellerCheckbox" aria-label="Amazon公式出品のみ" class="a-spacing-micro">
         <div class="a-checkbox a-checkbox-fancy s-navigation-checkbox aok-float-left">
@@ -98,11 +98,11 @@
 
 
 
-<div id="ele8" class="a-section a-spacing-small">
+<div id="filterPrice" name="hideableElem" class="a-section a-spacing-small">
     <span class="a-size-base a-color-base a-text-bold" dir="auto">価格</span>
 </div>
 
-<ul id="ele8" aria-labelledby="price" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
+<ul id="filterPrice" name="hideableElem" aria-labelledby="price" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
 
     <li id="priceInput" class="a-spacing-micro">
         <span class="a-color-base s-ref-small-padding-left s-ref-price-currency" style="margin-top: 0;">&yen;</span>
@@ -123,11 +123,11 @@
 
 
 
-<div id="ele9" class="a-section a-spacing-small">
+<div id="filterPercentOff" name="hideableElem" class="a-section a-spacing-small">
     <span class="a-size-base a-color-base a-text-bold" dir="auto">割引率</span>
 </div>
 
-<ul id="ele9" aria-labelledby="percentOff" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
+<ul id="filterPercentOff" name="hideableElem" aria-labelledby="percentOff" class="a-unordered-list a-nostyle a-vertical a-spacing-medium">
     
     <li id="percentOffInput" class="a-spacing-micro">
         <span class="a-color-base s-ref-small-padding-left s-ref-price-currency" style="margin-top: 0;">&#37;</span>

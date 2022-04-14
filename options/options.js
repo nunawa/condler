@@ -1,31 +1,19 @@
 // options_uiのconsole.logは about:debugging->調査->コンソール に表示される
 
-let checkbox = document.getElementsByName("checkbox");
+$(window).on("load", () => {
+    const checkbox = $("input[name='checkbox']");
 
-// これはダメ 0になる
-//console.log("checkbox.length: " + checkbox.length);
+    browser.storage.local.get("isHideElem").then((result) => {
+        let isHideElem = result["isHideElem"];
 
-window.onload = function() {
-    //console.log("checkbox.length: " + checkbox.length);
-    browser.storage.local.get("numel").then(function(result) {
-        if (checkbox.length != result.numel) {
-            console.log("error: mismatch between checkbox.length and numel");
-        }
+        checkbox.each((i, elem) => {
+            const key = $(elem).attr("id");
+            $(elem).prop("checked", isHideElem[key]);
+
+            $(elem).on("click", () => {
+                isHideElem[key] = $(elem).prop("checked");
+                browser.storage.local.set({"isHideElem": isHideElem});
+            });
+        });
     });
-
-    for (let i = 0; i < checkbox.length; i++) {
-        const key = "ele" + i;
-        browser.storage.local.get([key]).then(function(result) {
-            if (result[key] === undefined) {
-                console.log("error: " + key + "is undefined");
-            } else {
-                checkbox[i].checked = result[key];
-            }
-        });
-
-        checkbox[i].addEventListener("click", function() {
-            // []で囲うことで変数を展開できる
-            browser.storage.local.set({[key]: this.checked});
-        });
-    }
-}
+});

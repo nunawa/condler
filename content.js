@@ -140,17 +140,13 @@ function pageTransition(linkUrl) {
 
 function main(radioButton) {
     // アドオン非表示設定の適用
-    browser.storage.local.get("numel").then(function(result) {
-        for (let i = 0; i < result.numel; i++) {
-            const key = "ele" + i;
+    browser.storage.local.get("isHideElem").then((result) => {
+        let isHideElem = result["isHideElem"];
 
-            browser.storage.local.get([key]).then(function(result) {
-                if (result[key] == false) {
-                    //console.log(info + key + " is false");
-                    // + 変数名 でセレクタに変数使える
-                    $("div#condler #" + key + "*").hide();
-                }
-            });
+        for (const key of Object.keys(isHideElem)) {
+            if (isHideElem[key] == false) {
+                $("div#condler #" + key + "*").hide();
+            }
         }
     });
 
@@ -178,7 +174,7 @@ function main(radioButton) {
     });
 
     if (allButtonFalseFlag == true) {
-        $("div#condler li#ele0 input[type='radio'][name='radioButton']").prop("checked", true);
+        $("div#condler li#sortRelevance input[type='radio'][name='radioButton']").prop("checked", true);
     }
 
 

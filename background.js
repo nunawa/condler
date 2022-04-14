@@ -1,28 +1,62 @@
-// 要素非表示設定保存用
-// 要素数取得
-$.get(browser.runtime.getURL("search-options-dom.html"), function(data) {
-    let numel = 0;
-    while (true) {
-        if (!$(data).find("[id='ele"+numel+"']").length && !$(data).siblings("[id='ele"+numel+"']").length) {
-            break;
-        }
-        numel++;
-    }
-    console.log("numel: " + numel);
-    browser.storage.local.get("numel").then(function(result) {
-        // 保存されている要素数と今取得した要素数が違う場合
-        if (result.numel != numel) {
-            // result.numelが空の時もここの処理入る
-            console.log("numel is empty or mismatch prev numel");
+function applyPrevSetting() {
+    // v1.2.1までの設定引き継ぎ
+    browser.storage.local.get("numel").then((result) => {
+        const numel = result["numel"];
 
-            // 表示非表示データをリセット
-            let data = {};
-            for (let i = 0; i < numel; i++) {
-                const key = "ele" + i;
-                data[key] = true;
+        if (numel) {
+            let prevSetting = {
+                sortRelevance: true,
+                sortPopularity: true,
+                sortSales: true,
+                sortReview: true,
+                sortPrice: true,
+                sortInversePrice: true,
+                sortReleaseDate: true,
+                filterAmazonOnly: true,
+                filterPrice: true,
+                filterPercentOff: true
+            };
+
+            // 各キーごとに古い設定の値を代入
+            let cnt = 0;
+            for (const key of Object.keys(prevSetting)) {
+                const eleKey = "ele" + cnt;
+
+                browser.storage.local.get(eleKey).then((result) => {
+                    prevSetting[key] = result[eleKey];
+                });
+                browser.storage.local.remove(eleKey);
+
+                cnt++;
             }
-            browser.storage.local.set(data);
+
+            browser.storage.local.get("isHideElem").then((result) => {
+                let newSetting = result["isHideElem"];
+                
+                // 現在のデフォルト設定に古い設定を上書き・マージ
+                Object.assign(newSetting, prevSetting);
+                browser.storage.local.set({"isHideElem": newSetting});
+            });
+
+            browser.storage.local.remove("numel");
         }
     });
-    browser.storage.local.set({numel: numel});
+}
+
+
+// 要素非表示設定保存用
+$.get(browser.runtime.getURL("search-options-dom.html"), function(data) {
+    let isHideElem = {};
+
+    $(data).find("[name='hideableElem']").each((i, elem) => {
+        const key = $(elem).attr("id");
+        isHideElem[key] = true;
+    });
+
+    $(data).filter("[name='hideableElem']").each((i, elem) => {
+        const key = $(elem).attr("id");
+        isHideElem[key] = true;
+    });
+
+    browser.storage.local.set({"isHideElem": isHideElem}).then(applyPrevSetting);
 });
