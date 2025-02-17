@@ -1,4 +1,4 @@
-importScripts("./lib/browser-polyfill.js");
+importScripts("./lib/browser-polyfill.min.js");
 
 function applyPrevSetting() {
     // v1.2.1までの設定引き継ぎ
