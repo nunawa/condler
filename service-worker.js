@@ -1,3 +1,5 @@
+importScripts("./lib/browser-polyfill.min.js");
+
 function applyPrevSetting() {
     // v1.2.1までの設定引き継ぎ
     browser.storage.local.get("numel").then((result) => {
@@ -43,20 +45,17 @@ function applyPrevSetting() {
     });
 }
 
-
 // 要素非表示設定保存用
-$.get(browser.runtime.getURL("search-options-dom.html"), function(data) {
-    let isHideElem = {};
-
-    $(data).find("[name='hideableElem']").each((i, elem) => {
-        const key = $(elem).attr("id");
-        isHideElem[key] = true;
-    });
-
-    $(data).filter("[name='hideableElem']").each((i, elem) => {
-        const key = $(elem).attr("id");
-        isHideElem[key] = true;
-    });
-
-    browser.storage.local.set({"isHideElem": isHideElem}).then(applyPrevSetting);
-});
+const isHideElem = {
+    "filterAmazonOnly": true,
+    "filterPercentOff": true,
+    "filterPrice": true,
+    "sortInversePrice": true,
+    "sortPopularity": true,
+    "sortPrice": true,
+    "sortReleaseDate": true,
+    "sortRelevance": true,
+    "sortReview": true,
+    "sortSales": true
+}
+browser.storage.local.set({"isHideElem": isHideElem}).then(applyPrevSetting);
