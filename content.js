@@ -345,7 +345,7 @@ function loadCallback() {
 
 $(window).on("load", function() {
     // ドロップダウン並べ替え非表示
-    $("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
+    $("span.rush-component form span.a-dropdown-container").hide();
 
     // アドオン用DOM要素作成
     let div = document.createElement("div");
