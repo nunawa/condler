@@ -7,9 +7,13 @@
 A browser extension to improve searching on Amazon.
 
 ## Recommended by
+
 * [マイナビニュース](https://news.mynavi.jp/article/20210622-1907698/)
 * [GIGA！無料通信](https://www.gigafree.org/google-chrome/condler/)
 * [ナポリタン寿司のPC日記](https://www.naporitansushi.com/condler/)
+* [BaskMedia](https://baskmedia.jp/google-chrome-extension/)
+* [Tanweb](https://tanweb.net/2023/08/01/55724/)
+* [kdroidwinの日記](https://kdroidwin.hatenablog.com/entry/sc)
 
 ## License
 
