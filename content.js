@@ -345,7 +345,7 @@ function loadCallback() {
 
 $(window).on("load", function() {
     // ドロップダウン並べ替え非表示
-    $("span.rush-component div.sg-col-6-of-20.sg-col.sg-col-6-of-16.sg-col-6-of-12 span.a-dropdown-container").hide();
+    $("span.rush-component form span.a-dropdown-container").hide();
 
     // アドオン用DOM要素作成
     let div = document.createElement("div");
@@ -354,7 +354,7 @@ $(window).on("load", function() {
 
     // 100ms間隔で5回、targetNodeの取得を試みる
     const timer = setInterval(() => {
-        const primaryTarget = $("div#s-refinements>div>div:first");
+        const primaryTarget = $("div#s-refinements>div:not(#s-refinements-header):not(#s-refinements-a11y-summary)>div:first");
         const secondaryTarget = $("div#dropdown-content-s-all-filters>div:first");
         if (primaryTarget.length) {
             clearInterval(timer);
